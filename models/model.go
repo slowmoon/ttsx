@@ -19,6 +19,7 @@ type User struct{
 }
 
 type Receiver struct{
+	Id int64
 	Name string   //收件人
 	ZipCode string   //邮编
 	Address string  // 地址
@@ -29,7 +30,7 @@ type Receiver struct{
 
 
 func init(){
-	  orm.RegisterDataBase("default", "mysql", "root:244121@tcp:(host.docker.internal:3306)/ttsx?charset=utf8")
+	  orm.RegisterDataBase("default", "mysql", "root:244121@tcp(host.docker.internal:3306)/ttsx?charset=utf8")
 	  orm.RegisterModel(new(User), new(Receiver))
 	  orm.RunSyncdb("default", false, true)
 }
