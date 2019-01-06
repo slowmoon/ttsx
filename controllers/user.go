@@ -1,42 +1,42 @@
 package controllers
 
 import (
-	"github.com/astaxie/beego/orm"
+	"regexp"
+	"strconv"
 	"ttsx/models"
 	"github.com/astaxie/beego"
-	"regexp"
+	"github.com/astaxie/beego/orm"
+	"github.com/astaxie/beego/utils"
 )
 
-
-
-type UserController struct{
+type UserController struct {
 	beego.Controller
 }
 
-func(this *UserController)ShowRegister(){
-	 this.TplName = "register.html"
+func (this *UserController) ShowRegister() {
+	this.TplName = "register.html"
 }
 
-func(this *UserController)HandleRegister(){
+func (this *UserController) HandleRegister() {
 	userName := this.GetString("user_name")
 	psw := this.GetString("pwd")
 	cpwd := this.GetString("cpwd")
 	email := this.GetString("email")
 
-	if userName == "" || psw== "" || cpwd=="" || email==""{
+	if userName == "" || psw == "" || cpwd == "" || email == "" {
 		beego.Error("注册数据为空")
 		this.Data["error"] = "数据为空"
 		this.TplName = "register.html"
 	}
-	if psw !=cpwd{
+	if psw != cpwd {
 		beego.Error("两次密码不同")
 		this.Data["error"] = "密码输入错误"
 		this.TplName = "register.html"
 	}
 
-	reg :=regexp.MustCompile(`\w+@.*\.(.*)?`)
+	reg := regexp.MustCompile(`\w+@.*\.(.*)?`)
 	result := reg.FindStringSubmatch(email)
-	if len(result)==0{
+	if len(result) == 0 {
 		beego.Error("邮箱创建失败")
 		this.Data["error"] = "邮箱数据错误"
 		this.TplName = "register.html"
@@ -47,11 +47,41 @@ func(this *UserController)HandleRegister(){
 	user.Password = psw
 	user.Email = email
 	o := orm.NewOrm()
-	if _, err := o.Insert(&user);err!= nil{
+	if _, err := o.Insert(&user); err != nil {
 		beego.Error("用户创建失败")
 		this.Data["error"] = "用户创建失败"
 		this.TplName = "register.html"
 	}
 	beego.Info("user register succ:", userName)
-	this.Redirect("/index", 302)
+	//this.Redirect("/index", 302)
+	//发送激活邮箱
+	emailSender := utils.NewEMail(`{"username":"935233292@qq.com","password":"zaydhykiohxvbcij","host":"smtp.qq.com","port":587}`)
+	emailSender.From = "935233292@qq.com"
+	emailSender.To = []string{email}
+	emailSender.Subject = "天天生鲜用户注册"
+	
+	emailSender.HTML = "<a href=\"http://127.0.0.1:8888/active?id=" + strconv.Itoa(int(user.Id)) + " \">点击激活</a>"
+	emailSender.Send()
+
+	this.Ctx.WriteString("注册成功,请前往页面激活")
+}
+
+func (this *UserController) ActiveUser() {
+	id, err := this.GetInt64("id")
+	if err != nil {
+		beego.Error("参数缺失:")
+		this.Ctx.WriteString("激活失败，参数缺失")
+		return
+	}
+	var user models.User
+	user.Id = id
+	o := orm.NewOrm()
+	if err = o.Read(&user); err != nil {
+		beego.Error("用户不存在")
+		this.Ctx.WriteString("激活失败，参数缺失")
+		return
+	}
+	user.Active = true
+	o.Update(&user)
+	this.Redirect("/login", 302)
 }

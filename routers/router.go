@@ -10,4 +10,6 @@ func init() {
 	beego.Router("/register", &controllers.UserController{}, "get:ShowRegister;post:HandleRegister")
 
 	beego.Router("/index", &controllers.IndexController{}, "get:ShowIndex")
+	beego.Router("/login", &controllers.LoginController{}, "get:ShowLogin")
+	beego.Router("/active", &controllers.UserController{}, "get:ActiveUser")
 }

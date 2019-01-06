@@ -5,13 +5,10 @@ import (
 )
 
 
-
-type IndexController struct{
+type LoginController struct{
 	beego.Controller
 }
 
-
-
-func(this *IndexController)ShowIndex(){
+func(this *LoginController)ShowLogin(){
 	this.TplName = "login.html"
 }
