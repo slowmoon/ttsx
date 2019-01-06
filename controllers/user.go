@@ -85,3 +85,51 @@ func (this *UserController) ActiveUser() {
 	o.Update(&user)
 	this.Redirect("/login", 302)
 }
+
+
+
+func(this *UserController)AddAddress(){
+	name := this.GetString("name")
+	address:= this.GetString("address")
+	zipcode := this.GetString("zipcode")
+	phone := this.GetString("phone")
+	if name=="" || address == "" ||zipcode=="" || phone == ""{
+		beego.Error("the specify param is not present!")
+		this.Redirect("/", 302)
+		return
+	}
+	var receiver models.Receiver
+	receiver.Address = address
+	receiver.Name = name
+	receiver.Phone = phone
+	receiver.ZipCode = zipcode
+
+	userName := this.GetSession("userName")
+	if userName==nil{
+		beego.Error("user is not in login status")
+		this.Redirect("/", 302)
+		return
+	}
+	o := orm.NewOrm()
+	o.Begin()
+	var user models.User
+	user.UserName = userName.(string)
+    if err := o.Read(&user, "UserName");err!=nil{
+		beego.Error("user not exists!", userName, err)
+		this.Redirect("/", 302)
+		return
+	}
+	if c, err := o.QueryTable("Receiver").Filter("User__Id", user.Id).Count();err!=nil || c==0{
+		receiver.IsDefault = true
+	}
+	receiver.User = &user
+	if _, err :=o.Insert(&receiver);err!=nil{
+		beego.Error("error insert the receiver")
+		o.Rollback()
+		this.Redirect("/", 302)
+		return
+	}
+	o.Commit()
+	
+	this.Redirect("/goods/usercentersite", 302)
+}

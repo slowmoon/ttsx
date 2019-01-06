@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"github.com/astaxie/beego/orm"
+	"ttsx/models"
 	"github.com/astaxie/beego"
 )
 
@@ -22,12 +24,6 @@ func(this *GoodsController)ShowIndex(){
 }
 
 func(this *GoodsController)ShowUserCenterInfo(){
-	userName := this.GetSession("userName")
-	if userName == nil{
-		beego.Error("user not login")
-	}else{
-		this.Data["userName"] = userName
-	}
 	this.Layout = "layout.html"
 	this.TplName = "user_center_info.html"
 }
@@ -37,6 +33,15 @@ func(this *GoodsController)ShowUserCenterOrder(){
 	this.TplName = "user_center_order.html"
 }
 func(this *GoodsController)ShowUserCenterSite(){
+
+	//显示defaultaddress
+	userName := this.GetSession("userName").(string)
+	var receiver models.Receiver
+	o := orm.NewOrm()
+	err := o.QueryTable("Receiver").Filter("User__UserName", userName).Filter("IsDefault", true).One(&receiver)
+	if err ==nil{
+		this.Data["addr"] = receiver
+	}
 	this.Layout = "layout.html"
 	this.TplName = "user_center_site.html"
 }

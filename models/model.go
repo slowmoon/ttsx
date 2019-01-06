@@ -2,7 +2,6 @@ package models
 
 import (
 	"github.com/astaxie/beego/orm"
-	
 )
 
 
@@ -25,6 +24,7 @@ type Receiver struct{
 	IsDefault bool `orm:"default(false)"`  //默认
 	User *User    `orm:"rel(fk)"`  
 }
+
 
 
 func init(){

@@ -14,6 +14,8 @@ func init() {
 	beego.Router("/login", &controllers.LoginController{}, "get:ShowLogin;post:HandleLogin")
 	beego.Router("/logout", &controllers.LoginController{}, "get:Logout")
 	beego.Router("/active", &controllers.UserController{}, "get:ActiveUser")
+	beego.Router("/receiver", &controllers.UserController{}, "post:AddAddress")
+	//beego.Router("/receiver", &controllers.UserController{}, "post:AddAddress")
 	beego.Router("/goods/usercenterinfo", &controllers.GoodsController{}, "get:ShowUserCenterInfo")
 	beego.Router("/goods/usercenterorder", &controllers.GoodsController{}, "get:ShowUserCenterOrder")
 	beego.Router("/goods/usercentersite", &controllers.GoodsController{}, "get:ShowUserCenterSite")
@@ -25,5 +27,7 @@ var filterFunc = func(ctx *context.Context){
 	 if username == nil{
 		 beego.Error("user not login ....")
 		 ctx.Redirect(302, "/login")
+		 return
 	 }
+	 ctx.Input.SetData("userName" ,username)
 }

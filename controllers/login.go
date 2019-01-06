@@ -54,13 +54,12 @@ func(this *LoginController)HandleLogin(){
 	beego.Info("remember me status ", remember)
 	if remember!= "" && remember == "on"{
 		//记住用户名
-		this.Ctx.SetCookie("userName", userName)
-		this.Ctx.SetCookie("checked", "checked")
+		this.Ctx.SetCookie("userName", userName, 3600)
+		this.Ctx.SetCookie("checked", "checked", 3600)
 	}
 	this.SetSession("userName", userName)
 	beego.Info("用户登录成功", userName)
 	this.Redirect("/", 302)
-
 }
 
 
