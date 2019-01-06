@@ -6,8 +6,6 @@ import (
 )
 
 
-
-
 type User struct{
 	Id  int64  
 	UserName string `orm:"unique;size(100)"`  //用户名
