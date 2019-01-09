@@ -19,6 +19,8 @@ func init() {
 	beego.Router("/goods/usercenterinfo", &controllers.GoodsController{}, "get:ShowUserCenterInfo")
 	beego.Router("/goods/usercenterorder", &controllers.GoodsController{}, "get:ShowUserCenterOrder")
 	beego.Router("/goods/usercentersite", &controllers.GoodsController{}, "get:ShowUserCenterSite")
+	beego.Router("/goods/detail", &controllers.GoodsController{}, "get:ShowDetail")
+	beego.Router("/goods/types", &controllers.GoodsController{}, "get:ShowList")
 }
 
 

@@ -119,9 +119,12 @@ func(this *UserController)AddAddress(){
 		this.Redirect("/", 302)
 		return
 	}
-	if c, err := o.QueryTable("Receiver").Filter("User__Id", user.Id).Count();err!=nil || c==0{
-		receiver.IsDefault = true
+	var oldReceiver models.Receiver
+	if  err := o.QueryTable("Receiver").RelatedSel("User").Filter("User__Id", user.Id).Filter("IsDefault", true).One(&oldReceiver);err!=nil {
+		receiver.IsDefault = true  
 	}
+	beego.Info(oldReceiver)
+
 	receiver.User = &user
 	if _, err :=o.Insert(&receiver);err!=nil{
 		beego.Error("error insert the receiver")
